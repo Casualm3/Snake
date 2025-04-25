@@ -1,0 +1,4 @@
+# Constants for the game
+BLOCK_SIZE = 20
+SCREEN_WIDTH = 1200
+SCREEN_HEIGHT = 800
