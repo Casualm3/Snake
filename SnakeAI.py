@@ -16,7 +16,10 @@ SNAKE_COLOR = (0, 255, 0)
 FOOD_COLOR = (255, 0, 0)
 BACKGROUND_COLOR = (0, 0, 0)
 #WHITE = (255, 255, 255)
-
+def getRandomLocation():
+    x = random.randint(0, (WIDTH - BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE
+    y = random.randint(0, (HEIGHT - BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE
+    return (x, y)
 # Initialize screen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Snake Game")
@@ -25,12 +28,9 @@ clock = pygame.time.Clock()
 
 # Snake and food initialization
 snake = s.Snake()
-snake.body = [(random.randint(0, (WIDTH - BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE,
-              random.randint(0, (HEIGHT - BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE)]
+snake.body = [getRandomLocation() for _ in range(5)]  # Initial snake body segments
 snake.direction = (BLOCK_SIZE, 0)
-food = (random.randint(0, (WIDTH - BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE,
-        random.randint(0, (HEIGHT - BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE)
-print("Food position:", food)
+food = getRandomLocation()  # Random food position
 # Game over function
 def game_over():
     font = pygame.font.Font(None, 74)
@@ -63,8 +63,7 @@ while True:
     # Check if snake eats the food
     if new_head == food:
         snake.body.append(snake.body[-1])  # Grow the snake
-        food = (random.randint(0, (WIDTH - BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE,
-            random.randint(0, (HEIGHT - BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE)
+        food = getRandomLocation()  # Generate new food position
 
     # Draw everything
     screen.fill(BACKGROUND_COLOR)
