@@ -1,9 +1,9 @@
 import pygame
 import sys
-import random
 import snake as s
 import constants as c
 import foodType as f
+from helperFunctions import getRandomLocation
 # Initialize pygame
 pygame.init()
 
@@ -16,10 +16,6 @@ SNAKE_COLOR = (0, 255, 0)
 FOOD_COLOR = (255, 0, 0)
 BACKGROUND_COLOR = (0, 0, 0)
 
-def getRandomLocation():
-    x = random.randint(0, (SCREEN_WIDTH - BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE
-    y = random.randint(0, (SCREEN_HEIGHT - BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE
-    return (x, y)
 # Initialize screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Snake Game")
@@ -27,9 +23,9 @@ pygame.display.set_caption("Snake Game")
 clock = pygame.time.Clock()
 
 # Snake and food initialization
-snake = s.Snake(20) # Create a snake with a length of 20 blocks
-foodType = f.get_random_food_image()  # Random food image
-food = getRandomLocation()  # Random food position
+snake = s.Snake() # Create a snake with a length of 20 blocks
+snack = f.get_random_food()  # Get a random food item
+
 # Game over function
 def game_over():
     font = pygame.font.Font(None, 74)
@@ -39,7 +35,6 @@ def game_over():
     pygame.time.wait(2000)
     pygame.quit()
     sys.exit()
-
 
 # Function to draw the snake and food    
 # Main game loop
@@ -62,10 +57,10 @@ while True:
         game_over()
 
     # Check if snake eats the food
-    if new_head == food:
+    if new_head == snack.location:
         snake.body.append(snake.body[-1])  # Grow the snake
-        food = getRandomLocation()  # Generate new food position
-        foodType = f.get_random_food_image()
+        snack = f.get_random_food()  # Get a new food item
+        snack.location = getRandomLocation()  # Generate new food position
 
     # Draw everything
     screen.fill(BACKGROUND_COLOR)
@@ -76,8 +71,13 @@ while True:
         pygame.draw.line(screen, (40, 40, 40), (0, y), (SCREEN_WIDTH, y))
     for segment in snake.body:
             pygame.draw.rect(screen, snake.color, pygame.Rect(segment[0], segment[1], c.BLOCK_SIZE, c.BLOCK_SIZE))    
-   
-    screen.blit(foodType, (food[0], food[1]))
+    # Move the food to the left
+    if pygame.time.get_ticks() // 100 % 10 == 0:  # Run every 10th iteration (approx. every second at 10 FPS)
+        foodLocation = snack.location
+        foodLocation = (foodLocation[0] - BLOCK_SIZE, foodLocation[1]) if foodLocation[0] > 0 else getRandomLocation()
+        snack.location = foodLocation
+    # Draw the food
+    screen.blit(snack.image, snack.location)
 
     # Update the display
     pygame.display.flip()
