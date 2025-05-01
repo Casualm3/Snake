@@ -19,6 +19,7 @@ BACKGROUND_COLOR = (0, 0, 0)
 def getRandomLocation():
     x = random.randint(0, (WIDTH - BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE
     y = random.randint(0, (HEIGHT - BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE
+    print(f"Random location generated: ({x}, {y})")
     return (x, y)
 # Initialize screen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -27,9 +28,7 @@ pygame.display.set_caption("Snake Game")
 clock = pygame.time.Clock()
 
 # Snake and food initialization
-snake = s.Snake()
-snake.body = [getRandomLocation() for _ in range(5)]  # Initial snake body segments
-snake.direction = (BLOCK_SIZE, 0)
+snake = s.Snake(20) # Create a snake with a length of 20 blocks
 food = getRandomLocation()  # Random food position
 # Game over function
 def game_over():
@@ -41,6 +40,14 @@ def game_over():
     pygame.quit()
     sys.exit()
 
+# Load apple image and scale it to the block size
+apple_image = pygame.image.load('./images/apple.jpg')
+apple_image = pygame.transform.scale(apple_image, (BLOCK_SIZE, BLOCK_SIZE))
+# Load pear image and scale it to the block size
+pear_image = pygame.image.load('./images/pear.jpg')
+pear_image = pygame.transform.scale(pear_image, (BLOCK_SIZE, BLOCK_SIZE))
+FoodType = random.choice([apple_image, pear_image])
+# Function to draw the snake and food    
 # Main game loop
 while True:
     for event in pygame.event.get():
@@ -64,6 +71,7 @@ while True:
     if new_head == food:
         snake.body.append(snake.body[-1])  # Grow the snake
         food = getRandomLocation()  # Generate new food position
+        FoodType = apple_image if FoodType == pear_image else pear_image
 
     # Draw everything
     screen.fill(BACKGROUND_COLOR)
@@ -75,7 +83,7 @@ while True:
     for segment in snake.body:
             pygame.draw.rect(screen, snake.color, pygame.Rect(segment[0], segment[1], c.BLOCK_SIZE, c.BLOCK_SIZE))    
    
-    pygame.draw.rect(screen, FOOD_COLOR, pygame.Rect(food[0], food[1], BLOCK_SIZE, BLOCK_SIZE))
+    screen.blit(FoodType, (food[0], food[1]))
 
     # Update the display
     pygame.display.flip()
